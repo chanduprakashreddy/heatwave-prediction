@@ -1,0 +1,10 @@
+{
+  "mae": 0.896,
+  "rmse": 1.214,
+  "r2": 0.8188,
+  "mae_baseline": 0.941,
+  "train_size": 10674,
+  "test_size": 1190,
+  "n_features": 31,
+  "city": "Bangalore"
+}

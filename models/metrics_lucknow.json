@@ -1,0 +1,10 @@
+{
+  "mae": 1.128,
+  "rmse": 1.609,
+  "r2": 0.938,
+  "mae_baseline": 1.188,
+  "train_size": 10674,
+  "test_size": 1190,
+  "n_features": 31,
+  "city": "Lucknow"
+}

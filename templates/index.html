@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Heatwave & Anomaly Prediction</title>
+    <meta name="description"
+        content="AI-driven heatwave forecasting and temperature anomaly detection using XGBoost, Isolation Forest, and IMD criteria on 30 years of Indian climate data.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="/static/css/style.css">
+    <script src="https://cdn.plot.ly/plotly-2.27.0.min.js"></script>
+</head>
+
+<body>
+    <!-- ============ HERO ============ -->
+    <header class="hero" id="hero">
+        <div class="hero-glow"></div>
+        <div class="hero-icon">🔥</div>
+        <h1 class="hero-title">AI Heatwave & Anomaly Prediction</h1>
+        <p class="hero-subtitle">Ensemble Forecasting + Isolation Forest anomaly detection on 30 years of Indian climate
+            data</p>
+    </header>
+
+    <!-- ============ CONTROLS ============ -->
+    <section class="controls-section" id="controls">
+        <div class="container">
+            <div class="controls-bar">
+                <div class="control-group">
+                    <label class="control-label">CITY / STATION</label>
+                    <div class="select-wrapper">
+                        <select id="citySelect" class="select-input">
+                            {% for city in cities %}
+                            <option value="{{ city }}" {% if city=="Bangalore" %}selected{% endif %}>{{ city }}</option>
+                            {% endfor %}
+                        </select>
+                        <span class="select-arrow">▾</span>
+                    </div>
+                </div>
+                <div class="control-group">
+                    <label class="control-label">START YEAR</label>
+                    <div class="select-wrapper">
+                        <input type="number" id="startYear" class="select-input" value="1990" min="1900" max="2100"
+                            style="padding-right: 15px;">
+                    </div>
+                </div>
+                <div class="control-group">
+                    <label class="control-label">END YEAR</label>
+                    <div class="select-wrapper">
+                        <input type="number" id="endYear" class="select-input" value="2022" min="1900" max="2100"
+                            style="padding-right: 15px;">
+                    </div>
+                </div>
+                <button id="analyzeBtn" class="btn-analyze" onclick="runAnalysis()">
+                    <span class="btn-icon">🔥</span>
+                    <span class="btn-text">Analyze</span>
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- ============ MODEL EVALUATION ============ -->
+    <section class="metrics-section hidden" id="metricsSection">
+        <div class="container">
+            <div class="metrics-bar">
+                <div class="metrics-header">
+                    <h3 class="metrics-title">📊 Model Evaluation</h3>
+                    <span class="metrics-badge" id="metricsBadge">Ensemble (XGBoost + SARIMA)</span>
+                </div>
+                <div class="metrics-row">
+                    <div class="metric-item">
+                        <span class="metric-label" style="color:#fcd34d">Baseline MAE</span>
+                        <span class="metric-value" id="metricMAEBase">—</span>
+                        <span class="metric-unit">°C</span>
+                    </div>
+                    <div class="metric-item">
+                        <span class="metric-label" style="color:#38bdf8">Model MAE</span>
+                        <span class="metric-value" id="metricMAE">—</span>
+                        <span class="metric-unit">°C</span>
+                    </div>
+                    <div class="metric-item">
+                        <span class="metric-label">RMSE</span>
+                        <span class="metric-value" id="metricRMSE">—</span>
+                        <span class="metric-unit">°C</span>
+                    </div>
+                    <div class="metric-item">
+                        <span class="metric-label">Accuracy (R²)</span>
+                        <span class="metric-value" id="metricR2">—</span>
+                        <span class="metric-unit"></span>
+                    </div>
+                    <div class="metric-item">
+                        <span class="metric-label">Heatwave F1</span>
+                        <span class="metric-value" id="metricF1">—</span>
+                        <span class="metric-unit"></span>
+                    </div>
+                    <div class="metric-item">
+                        <span class="metric-label">Train Size</span>
+                        <span class="metric-value" id="metricTrain">—</span>
+                        <span class="metric-unit">days</span>
+                    </div>
+                    <div class="metric-item">
+                        <span class="metric-label">Test Size</span>
+                        <span class="metric-value" id="metricTest">—</span>
+                        <span class="metric-unit">days</span>
+                    </div>
+                    <div class="metric-item">
+                        <span class="metric-label">Features</span>
+                        <span class="metric-value" id="metricFeatures">—</span>
+                        <span class="metric-unit"></span>
+                    </div>
+                </div>
+                <div class="imd-info" id="imdInfo"></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ============ STAT CARDS ============ -->
+    <section class="stats-section" id="statsSection">
+        <div class="container">
+            <div class="stats-grid">
+                <div class="stat-card" id="cardLatestTemp">
+                    <div class="stat-icon stat-icon-temp">🌡️</div>
+                    <div class="stat-value" id="valLatestTemp">--</div>
+                    <div class="stat-label">LATEST TEMPERATURE</div>
+                    <div class="stat-accent accent-cyan"></div>
+                </div>
+                <div class="stat-card" id="cardAnomalies">
+                    <div class="stat-icon stat-icon-anomaly">⚠️</div>
+                    <div class="stat-value" id="valAnomalies">--</div>
+                    <div class="stat-label">ANOMALIES DETECTED</div>
+                    <div class="stat-accent accent-yellow"></div>
+                </div>
+                <div class="stat-card" id="cardHeatwave">
+                    <div class="stat-icon stat-icon-fire">🔥</div>
+                    <div class="stat-value" id="valHeatwave">--</div>
+                    <div class="stat-label">HEATWAVE DAYS</div>
+                    <div class="stat-accent accent-red"></div>
+                </div>
+                <div class="stat-card" id="cardForecastMax">
+                    <div class="stat-icon stat-icon-chart">📈</div>
+                    <div class="stat-value" id="valForecastMax">--</div>
+                    <div class="stat-label">FORECAST MAX</div>
+                    <div class="stat-accent accent-cyan"></div>
+                </div>
+                <div class="stat-card" id="cardRecordHigh">
+                    <div class="stat-icon stat-icon-peak">🏔️</div>
+                    <div class="stat-value" id="valRecordHigh">--</div>
+                    <div class="stat-label">RECORD HIGH</div>
+                    <div class="stat-accent accent-green"></div>
+                </div>
+                <div class="stat-card" id="cardThreshold">
+                    <div class="stat-icon stat-icon-threshold">🧪</div>
+                    <div class="stat-value" id="valThreshold">--</div>
+                    <div class="stat-label">ANOMALY THRESHOLD</div>
+                    <div class="stat-accent accent-purple"></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ============ TEMPERATURE CHART ============ -->
+    <section class="chart-section" id="chartSection">
+        <div class="container">
+            <div class="chart-card">
+                <div class="chart-header">
+                    <h2 class="chart-title">
+                        <span class="chart-title-icon">📊</span>
+                        Temperature, Forecast & Heatwave Analysis
+                    </h2>
+                    <span class="chart-badge">Ensemble + IMD Criteria</span>
+                </div>
+                <div class="chart-legend" id="chartLegend">
+                    <span class="legend-item"><span class="legend-dot dot-hist"></span>Historical Temperature</span>
+                    <span class="legend-item"><span class="legend-dot dot-forecast"></span>Forecast Temperature</span>
+                    <span class="legend-item"><span class="legend-dot dot-ci"></span>95% Confidence Interval</span>
+                    <span class="legend-item"><span class="legend-dot dot-clim"></span>Climatology (Avg)</span>
+                    <span class="legend-item"><span class="legend-dot dot-heatwave"></span>Heatwave Days</span>
+                    <span class="legend-item"><span class="legend-dot dot-anomaly"></span>Anomalies (Z-score +
+                        IF)</span>
+                </div>
+                <div id="tempChart" class="chart-container"></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ============ ANOMALY CHART ============ -->
+    <section class="chart-section" id="anomalyChartSection">
+        <div class="container">
+            <div class="chart-card">
+                <div class="chart-header">
+                    <h2 class="chart-title">
+                        <span class="chart-title-icon">📉</span>
+                        Anomaly (Deviation from Climatology)
+                    </h2>
+                    <span class="chart-badge">Z-score + Isolation Forest</span>
+                </div>
+                <div id="anomalyChart" class="chart-container"></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ============ HEATWAVE EVENTS ============ -->
+    <section class="events-section" id="eventsSection">
+        <div class="container">
+            <h2 class="section-title">
+                <span class="section-title-icon">🔥</span>
+                Heatwave Events &nbsp;≥3 Consecutive Days Above Threshold
+            </h2>
+            <div class="events-grid" id="eventsGrid">
+                <div class="events-placeholder">Select a city and click <strong>Analyze</strong> to view heatwave
+                    events.</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ============ HOW IT WORKS ============ -->
+    <section class="how-section" id="howSection">
+        <div class="container">
+            <h2 class="section-title">
+                <span class="section-title-icon">📘</span>
+                How It Works &nbsp;▸
+            </h2>
+            <div class="how-grid">
+                <div class="how-card">
+                    <div class="how-number">01</div>
+                    <h3>Ensemble Forecasting</h3>
+                    <p>Gradient-boosted XGBoost + SARIMA time series model averaging for robust, recursive multi-step
+                        temperature prediction.</p>
+                </div>
+                <div class="how-card">
+                    <div class="how-number">02</div>
+                    <h3>Climatology Baseline</h3>
+                    <p>30-year day-of-year temperature average with 15-day rolling window smoothing defines the seasonal
+                        normal for each calendar day.</p>
+                </div>
+                <div class="how-card">
+                    <div class="how-number">03</div>
+                    <h3>Anomaly Detection</h3>
+                    <p>Combined Z-score (>2σ from climatological normal) and multi-feature Isolation Forest for robust
+                        statistical anomaly identification.</p>
+                </div>
+                <div class="how-card">
+                    <div class="how-number">04</div>
+                    <h3>IMD Heatwave Criteria</h3>
+                    <p>India Meteorological Department standards: Plains ≥40°C + 4.5°C departure; Coastal ≥37°C + 4.5°C
+                        departure; ≥3 consecutive days. Severe: >6.4°C departure.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ============ LOADING OVERLAY ============ -->
+    <div id="loadingOverlay" class="loading-overlay hidden">
+        <div class="loading-spinner">
+            <div class="spinner-ring"></div>
+            <p class="loading-text">Training Ensemble model & analyzing data…</p>
+            <p class="loading-subtext">This may take 30–60 seconds on first run for a city (SARIMA takes time!)</p>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <p>AI Heatwave & Anomaly Prediction &mdash; Built with Flask, XGBoost, Isolation Forest, IMD Criteria &amp;
+            Plotly</p>
+    </footer>
+
+    <script src="/static/js/app.js"></script>
+</body>
+
+</html>

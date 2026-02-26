@@ -1,0 +1,10 @@
+{
+  "mae": 1.115,
+  "rmse": 1.523,
+  "r2": 0.9542,
+  "mae_baseline": 1.158,
+  "train_size": 10674,
+  "test_size": 1190,
+  "n_features": 31,
+  "city": "Delhi NCR"
+}

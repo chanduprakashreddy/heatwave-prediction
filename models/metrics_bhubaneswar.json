@@ -1,0 +1,10 @@
+{
+  "mae": 1.259,
+  "rmse": 1.731,
+  "r2": 0.7752,
+  "mae_baseline": 1.346,
+  "train_size": 10711,
+  "test_size": 1194,
+  "n_features": 31,
+  "city": "Bhubaneswar"
+}

@@ -1,0 +1,10 @@
+{
+  "mae": 0.798,
+  "rmse": 1.087,
+  "r2": 0.885,
+  "mae_baseline": 0.83,
+  "train_size": 10674,
+  "test_size": 1190,
+  "n_features": 31,
+  "city": "Chennai"
+}
