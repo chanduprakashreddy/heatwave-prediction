@@ -5,7 +5,7 @@ import gdown
 # REPLACE THIS WITH YOUR ACTUAL GOOGLE DRIVE FILE ID
 # ⚠️ IMPORTANT: PASTE YOUR REAL ID BELOW OR IT WILL FAIL ⚠️
 # Example: '1A2B3C4D5E6F7G8H9I0J'
-file_id = "PASTE_YOUR_REAL_GOOGLE_DRIVE_ID_HERE"
+file_id = "17YMBYdqVsIy9tIhjMGpVuhtyrPTGVZXN"
 output = "models.zip"
 
 def download_and_extract():
@@ -55,3 +55,4 @@ def download_and_extract():
 
 if __name__ == "__main__":
     download_and_extract()
+
