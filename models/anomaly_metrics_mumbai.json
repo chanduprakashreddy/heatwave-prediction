@@ -1,0 +1,11 @@
+{
+  "city": "Mumbai",
+  "train_samples": 10109,
+  "test_samples": 1784,
+  "mae_train": 0.0026,
+  "rmse_train": 0.0036,
+  "r2_train": 1.0,
+  "mae_test": 0.0139,
+  "rmse_test": 0.1056,
+  "r2_test": 0.9967
+}

@@ -1,0 +1,10 @@
+{
+  "mae": 0.961,
+  "rmse": 1.293,
+  "r2": 0.6972,
+  "mae_baseline": 1.017,
+  "train_size": 10673,
+  "test_size": 1190,
+  "n_features": 34,
+  "city": "Mumbai"
+}

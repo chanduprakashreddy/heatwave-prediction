@@ -1,0 +1,11 @@
+{
+  "city": "Bhubaneswar",
+  "train_samples": 9548,
+  "test_samples": 2387,
+  "heatwave_events_train": 785,
+  "heatwave_events_test": 117,
+  "precision": 0.6242,
+  "recall": 0.8803,
+  "f1": 0.7305,
+  "roc_auc": 0.9911
+}

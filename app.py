@@ -49,11 +49,28 @@ def analyze():
         city = data.get("city", "Bangalore")
         start_year = data.get("startYear", "1990")
         end_year = data.get("endYear", "2022")
-        forecast_days = 180  # Reduced from 365 to prevent timeouts on free tier
-
         # ------ Load exact dataset rows for historical graph ------
         df = load_data(city)
+        if df.empty:
+            raise ValueError("No data available for the selected city.")
+            
+        max_hist_year = df.index.year.max()
+        target_end_year = int(end_year)
+        
+        # Calculate forecast_days based on requested endYear
+        import pandas as pd
+        if target_end_year > max_hist_year:
+            max_date = df.index.max()
+            target_date = pd.Timestamp(year=target_end_year, month=12, day=31)
+            forecast_days = min((target_date - max_date).days, 3650) # Cap at 10 years
+        else:
+            forecast_days = 90
+            
+        if forecast_days <= 0:
+            forecast_days = 90
+
         if start_year and end_year:
+            # Pandas loc on dates safely handles out-of-bounds strings up to max available date
             df = df.loc[f"{start_year}":f"{end_year}"]
         if df.empty:
             raise ValueError("No data available for the selected city/year range.")
@@ -73,6 +90,24 @@ def analyze():
             model_df, TEMP_COL, days=forecast_days, city_name=city,
             model=sarima_model, xgb_model=xgb_model, percentile=0.95
         )
+        
+        # NOTE: forecast_temp now comes directly from the improved ML ensemble
+        # (XGBoost + time-decayed SARIMA + IPCC warming trend) in forecast.py.
+        # Previously this block randomly sampled historical anomalies which
+        # produced flat, noisy predictions with no realistic warming trend.
+        
+        # ------ Advanced Predictions (Enhanced ML) ------
+        # Add comprehensive prediction (anomaly regressor + heatwave classifier)
+        if forecast_days > 0:
+            forecast_df = comprehensive_prediction(model_df, forecast_df, city, TEMP_COL)
+            
+            # Map advanced predictions back to the keys app.js expects so charts update automatically
+            if "hw_predicted" in forecast_df.columns:
+                # Override the baseline rule-based heatwave_event with the ML output
+                forecast_df["heatwave_event"] = forecast_df["hw_predicted"].astype(bool)
+            if "predicted_anomaly" in forecast_df.columns:
+                # Override the baseline anomaly with the ML magnitude prediction
+                forecast_df["anomaly"] = forecast_df["predicted_anomaly"]
 
         # Historical anomaly series on exact dataset rows for accurate plotting.
         df = detect_anomalies(df, TEMP_COL)

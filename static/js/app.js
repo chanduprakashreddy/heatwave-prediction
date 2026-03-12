@@ -207,21 +207,7 @@ function renderTempChart(data) {
 
     const traces = [];
 
-    // IMD Absolute Minimum Threshold Line
-    if (data.imd_thresholds && data.imd_thresholds.min_actual) {
-        const threshold = data.imd_thresholds.min_actual;
-        const allDates = hist.dates.concat(fc.dates);
-        traces.push({
-            x: [allDates[0], allDates[allDates.length - 1]],
-            y: [threshold, threshold],
-            type: "scatter",
-            mode: "lines",
-            name: "IMD Min Threshold",
-            line: { color: "#ef4444", width: 1.5, dash: "dot" },
-            hovertemplate: "%{y:.1f}°C<extra>IMD Threshold</extra>",
-            showlegend: false,
-        });
-    }
+    // IMD Absolute Minimum Threshold Line removed per user request
 
     // Historical temperature
     traces.push({
@@ -367,16 +353,7 @@ function renderAnomalyChart(data) {
             name: "Anomaly",
             marker: { color: colors },
             hovertemplate: "%{y:.2f}°C<extra>Anomaly</extra>",
-        },
-        {
-            x: [allDates[0], allDates[allDates.length - 1]],
-            y: [threshold, threshold],
-            type: "scatter",
-            mode: "lines",
-            name: "95th Percentile Threshold",
-            line: { color: "#f97316", width: 1.5, dash: "dash" },
-            hovertemplate: "%{y:.2f}°C<extra>Threshold</extra>",
-        },
+        }
     ];
 
     // Add Z-score line if available

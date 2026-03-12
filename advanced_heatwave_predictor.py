@@ -204,6 +204,19 @@ def build_heatwave_features(df, temp_col="Temperature", historical_data_only=Fal
             temp_shifted.rolling(window, min_periods=1).mean()
         )
     
+    # === 10. YEAR-AWARE WARMING TREND ===
+    # Critical for future predictions: the model must know that 2030 is
+    # systematically warmer than 2010. Without this, the classifier
+    # anchors to historical baselines and underestimates future heatwaves.
+    feat["years_since_2000"] = df.index.year - 2000
+    feat["year"] = df.index.year
+    
+    # Warming-adjusted temperature: how warm is this temperature
+    # relative to what's "normal" for this year (accounting for trend)
+    warming_offset = (df.index.year - 2000) * 0.025  # IPCC/IMD rate
+    feat["warming_adjusted_temp"] = temp - warming_offset  # detrended
+    feat["warming_excess"] = warming_offset  # the warming signal itself
+    
     # Fill any NaN values
     feat = feat.fillna(0)
     

@@ -1,10 +1,10 @@
 {
-  "mae": 1.304,
-  "rmse": 1.704,
-  "r2": 0.0856,
+  "mae": 1.203,
+  "rmse": 1.703,
+  "r2": 0.0863,
   "mae_baseline": 1.342,
   "train_size": 353,
   "test_size": 43,
-  "n_features": 31,
+  "n_features": 34,
   "city": "Rourkela"
 }

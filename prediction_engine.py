@@ -200,9 +200,10 @@ def _calculate_composite_risk(forecast_df) -> pd.DataFrame:
     
     # Component 4: Persistence (consecutive hot days - up to 10 points)
     if "consecutive_hot_days" in forecast_df.columns:
+        max_hot = forecast_df["consecutive_hot_days"].max()
+        max_hot_safe = max(1, max_hot) if pd.notna(max_hot) else 1
         persist_score = (
-            10.0 * (forecast_df["consecutive_hot_days"] / 
-                   forecast_df["consecutive_hot_days"].max().clip(lower=1))
+            10.0 * (forecast_df["consecutive_hot_days"] / max_hot_safe)
         )
     else:
         persist_score = 0

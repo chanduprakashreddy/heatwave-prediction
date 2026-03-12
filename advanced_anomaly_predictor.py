@@ -207,6 +207,21 @@ def build_anomaly_prediction_features(df, temp_col="Temperature",
     feat["annual_phase_sin"] = np.sin(year_phase)
     feat["annual_phase_cos"] = np.cos(year_phase)
     
+    # === 11. YEAR-AWARE WARMING TREND ===
+    # Critical for future predictions: enables extrapolation of warming signal
+    feat["years_since_2000"] = df.index.year - 2000
+    feat["year"] = df.index.year
+    
+    # Warming-adjusted temperature: detrend the climate signal
+    # so the model learns pure weather variability
+    warming_offset = (df.index.year - 2000) * 0.025  # IPCC/IMD rate
+    feat["warming_adjusted_temp"] = temp - warming_offset
+    feat["warming_excess"] = warming_offset
+    
+    # Warming-adjusted anomaly: how much does the anomaly deviate
+    # from what we'd expect given the warming trend?
+    feat["trend_adjusted_anomaly"] = current_anomaly - warming_offset * 0.5
+    
     # Fill NaNs
     feat = feat.fillna(0)
     feat = feat.replace([np.inf, -np.inf], 0)

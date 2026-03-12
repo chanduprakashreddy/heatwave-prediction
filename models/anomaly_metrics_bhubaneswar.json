@@ -1,0 +1,11 @@
+{
+  "city": "Bhubaneswar",
+  "train_samples": 10144,
+  "test_samples": 1791,
+  "mae_train": 0.0033,
+  "rmse_train": 0.0044,
+  "r2_train": 1.0,
+  "mae_test": 0.0126,
+  "rmse_test": 0.0888,
+  "r2_test": 0.9985
+}

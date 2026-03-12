@@ -1,0 +1,7 @@
+Testing http://127.0.0.1:5000/api/analyze with {'city': 'Bangalore', 'startYear': '2015', 'endYear': '2025'}
+Request took 14.17 seconds
+Success: True
+Forecast stats: {'anomaly_count': 150, 'anomaly_threshold': 2.5, 'forecast_max': 29.1, 'heatwave_days': 51, 'latest_temp': 28.5, 'record_high': 39.2}
+Forecast max date: 2025-12-31
+Number of forecast days: 1255
+Forecast heatwave events: 0

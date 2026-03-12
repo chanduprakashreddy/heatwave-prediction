@@ -1,0 +1,11 @@
+{
+  "city": "Rajasthan (Jodhpur)",
+  "train_samples": 10109,
+  "test_samples": 1785,
+  "mae_train": 0.0027,
+  "rmse_train": 0.0037,
+  "r2_train": 1.0,
+  "mae_test": 0.0059,
+  "rmse_test": 0.0305,
+  "r2_test": 0.9996
+}

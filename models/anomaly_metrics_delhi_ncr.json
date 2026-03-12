@@ -1,0 +1,11 @@
+{
+  "city": "Delhi NCR",
+  "train_samples": 10109,
+  "test_samples": 1785,
+  "mae_train": 0.004,
+  "rmse_train": 0.0054,
+  "r2_train": 1.0,
+  "mae_test": 0.0087,
+  "rmse_test": 0.0469,
+  "r2_test": 0.9997
+}

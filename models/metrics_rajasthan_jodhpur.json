@@ -1,10 +1,10 @@
 {
-  "mae": 0.896,
-  "rmse": 1.214,
-  "r2": 0.8188,
+  "mae": 0.897,
+  "rmse": 1.218,
+  "r2": 0.8175,
   "mae_baseline": 0.941,
   "train_size": 10674,
   "test_size": 1190,
-  "n_features": 31,
+  "n_features": 34,
   "city": "Rajasthan (Jodhpur)"
 }

@@ -1,0 +1,11 @@
+{
+  "city": "Rourkela",
+  "train_samples": 340,
+  "test_samples": 86,
+  "heatwave_events_train": 6,
+  "heatwave_events_test": 0,
+  "precision": 0.0,
+  "recall": 0.0,
+  "f1": 0.0,
+  "roc_auc": 0.5
+}

@@ -1,0 +1,11 @@
+{
+  "city": "Chennai",
+  "train_samples": 9515,
+  "test_samples": 2379,
+  "heatwave_events_train": 948,
+  "heatwave_events_test": 212,
+  "precision": 0.7454,
+  "recall": 0.9528,
+  "f1": 0.8364,
+  "roc_auc": 0.9928
+}

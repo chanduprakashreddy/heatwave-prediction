@@ -1,0 +1,11 @@
+{
+  "city": "Lucknow",
+  "train_samples": 10109,
+  "test_samples": 1785,
+  "mae_train": 0.0036,
+  "rmse_train": 0.0049,
+  "r2_train": 1.0,
+  "mae_test": 0.0134,
+  "rmse_test": 0.0775,
+  "r2_test": 0.9991
+}

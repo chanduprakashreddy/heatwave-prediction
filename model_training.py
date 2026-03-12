@@ -112,6 +112,21 @@ def build_features(df, temp_col="Temperature", train_clim_mean=None):
     feat["year"] = df.index.year
     feat["year_norm"] = (feat["year"] - feat["year"].min()) / max((feat["year"].max() - feat["year"].min()), 1)
 
+    # --- Linear year feature for warming trend extrapolation ---
+    # Unlike year_norm (which is bounded 0-1 within training data),
+    # this feature naturally extends to future years (e.g., 30 for 2030)
+    # allowing the model to learn and extrapolate warming trends.
+    feat["years_since_2000"] = df.index.year - 2000
+
+    # --- ENSO proxy: 12-month rolling anomaly ---
+    # Research shows ENSO strongly modulates Indian heatwaves.
+    # Lag-12-month rolling mean temperature anomaly proxies the ENSO index.
+    if train_clim_mean is not None:
+        clim_mapped = doy_series.map(train_clim_mean)
+        anomaly_series = temp - clim_mapped
+        feat["enso_proxy_12m"] = anomaly_series.shift(1).rolling(365, min_periods=30).mean()
+        feat["enso_proxy_6m"] = anomaly_series.shift(1).rolling(180, min_periods=30).mean()
+
     # Target
     feat["target"] = temp
 
@@ -149,10 +164,11 @@ def train_xgb_model(df, temp_col="Temperature", city_name="default", force_retra
         return model, metrics
     
     # SAFETY: On a live server, we should NOT train on the fly as it will time out.
-    # Instead, we fail fast so the user knows the models are missing.
-    print(f"❌ ERROR: XGBoost model not found at {model_p}. Training is disabled on live server.")
-    print("Please run 'download_models.py' or train models locally before deploying.")
-    return None, {"error": f"XGBoost model for {city_name} not found."}
+    # But if force_retrain=True, allow training (for local train_all_models.py script).
+    if not force_retrain:
+        print(f"❌ ERROR: XGBoost model not found at {model_p}. Training is disabled on live server.")
+        print("Please run 'train_all_models.py' or train models locally before deploying.")
+        return None, {"error": f"XGBoost model for {city_name} not found."}
     # 1. Strict chronological split FIRST (Train = first 90%, Test = last 10%)
     split_idx = int(len(df) * 0.9)
     train_df = df.iloc[:split_idx].copy()

@@ -1,0 +1,11 @@
+{
+  "city": "Rourkela",
+  "train_samples": 362,
+  "test_samples": 64,
+  "mae_train": 0.0001,
+  "rmse_train": 0.0004,
+  "r2_train": 1.0,
+  "mae_test": 0.0653,
+  "rmse_test": 0.1061,
+  "r2_test": 0.9894
+}
