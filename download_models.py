@@ -5,7 +5,7 @@ import gdown
 # REPLACE THIS WITH YOUR ACTUAL GOOGLE DRIVE FILE ID
 # ⚠️ IMPORTANT: PASTE YOUR REAL ID BELOW OR IT WILL FAIL ⚠️
 # Example: '1A2B3C4D5E6F7G8H9I0J'
-file_id = "17YMBYdqVsIy9tIhjMGpVuhtyrPTGVZXN"
+file_id = "1kBiQUcd43OF3EGanamlmpyl78nIegkF6"
 output = "models.zip"
 
 def download_and_extract():
